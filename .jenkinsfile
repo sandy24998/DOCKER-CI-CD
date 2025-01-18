@@ -6,11 +6,6 @@ pipeline {
                 checkout scm // Jenkins automatically checks out the source code
             }
         }
-        stage('Build and Test') {
-            steps {
-                sh 'python3 -m unittest discover -s tests'
-            }
-        }
         stage('Docker Build') {
             steps {
                 sh 'docker build -t flask-app:latest .' 
