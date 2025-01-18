@@ -1,9 +1,9 @@
 pipeline {
     agent any
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
             steps {
-                git 'https://github.com/sandy24998/DOCKER-CI-CD.git'
+                checkout scm // Jenkins automatically checks out the source code
             }
         }
         stage('Build and Test') {
