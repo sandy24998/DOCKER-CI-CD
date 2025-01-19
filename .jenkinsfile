@@ -10,11 +10,9 @@ pipeline {
     steps {
         // Stop and remove all containers with the name "flask-app"
         sh '''
-            docker ps -a -q --filter "name=flask-app" | xargs -r docker rm || true
             docker ps -a -q --filter "name=flask-app" | xargs -r docker stop || true
-            docker images -q flask-app:latest | xargs -r docker rmi -f || true
+            docker ps -a -q --filter "name=flask-app" | xargs -r docker rm || true
             docker images -f "dangling=true" -q | xargs -r docker rmi || true
-
         '''
     }
 }
