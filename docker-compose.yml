@@ -1,7 +1,6 @@
 version: "3.3"
-
 services:
   web:
-    image: "flask-app:latest"  # Use the locally built image from the Jenkins build stage
+    image: "flask-app:latest"
     ports:
-      - "5000:5000"  # Expose port 5000 on host to port 5000 on container
+      - "5000:5000"
