@@ -50,5 +50,13 @@ pipeline {
                 sh 'docker-compose down && docker-compose up -d'
             }
         }
+         stage('Cleanup Dangling Images') {
+            steps {
+                script {
+                    // Remove dangling images that are not associated with any container
+                    sh 'docker images -f "dangling=true" -q | xargs -r docker rmi'
+                }
+            }
+        }
     }
 }
