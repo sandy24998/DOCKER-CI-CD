@@ -2,6 +2,6 @@ version: "3.3"
 services:
   web:
     image: "sandy541998/flask-app:latest"
+    container_name: flask-app   # Custom container name
     ports:
       - "5000:5000"
-
