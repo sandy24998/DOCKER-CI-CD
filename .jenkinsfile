@@ -6,31 +6,39 @@ pipeline {
                 checkout scm // Jenkins automatically checks out the source code
             }
         }
+        stage('Clean Up') {
+            steps {
+                // Stop and remove the running container
+                sh '''
+                    docker ps -a -q --filter "name=flask-app" | xargs -r docker stop
+                    docker ps -a -q --filter "name=flask-app" | xargs -r docker rm
+                    docker images -q flask-app:latest | xargs -r docker rmi
+                '''
+            }
+        }
         stage('Docker Build') {
             steps {
                 sh 'docker build -t flask-app:latest .' 
             }
         }
         stage('Push to Dockerhub') {
-    steps {
-        withCredentials([usernamePassword(
-            credentialsId: 'DockerHubCred', 
-            usernameVariable: 'DOCKER_USER', 
-            passwordVariable: 'DOCKER_PASS'
-        )]) {
-            sh '''
-                docker login -u $DOCKER_USER -p $DOCKER_PASS
-                docker image tag flask-app:latest $DOCKER_USER/flask-web-app:v1.0
-                docker push $DOCKER_USER/flask-web-app:v1.0
-            '''
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'DockerHubCred', 
+                    usernameVariable: 'DOCKER_USER', 
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        docker login -u $DOCKER_USER -p $DOCKER_PASS
+                        docker image tag flask-app:latest $DOCKER_USER/flask-web-app:v1.0
+                        docker push $DOCKER_USER/flask-web-app:v1.0
+                    '''
+                }
+            }
         }
-    }
-}
-
         stage('Deploy') {
             steps {
-                //sh 'docker stop flask-app || true && docker rm flask-app || true'
-                sh 'docker compose up -d'
+                sh 'docker-compose up -d'
             }
         }
     }
