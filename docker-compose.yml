@@ -1,0 +1,6 @@
+version: "3.3"
+services:
+  web:
+    image: "sandy541998/flask-app:latest"
+    port:
+      -  "5000:5000"  
