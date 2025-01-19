@@ -7,20 +7,21 @@ pipeline {
             }
         }
         stage('Clean Up') {
-            steps {
-                // Stop and remove the running container
-                sh '''
-                        docker ps -a -q --filter "name=flask-app" | xargs -r docker stop
-                        docker ps -a -q --filter "name=flask-app" | xargs -r docker rm -f
-                        docker images -q flask-app:latest | xargs -r docker rmi -f
-                '''
-            }
-        }
+    steps {
+        // Stop and remove all containers with the name "flask-app"
+        sh '''
+            docker ps -a -q --filter "name=flask-app" | xargs -r docker stop || true
+            docker ps -a -q --filter "name=flask-app" | xargs -r docker rm || true
+            docker images -q flask-app:latest | xargs -r docker rmi -f || true
+        '''
+    }
+}
+
         stage('Docker Build') {
-            steps {
-                sh 'docker build -t flask-app:latest .' 
-            }
-        }
+    steps {
+        sh 'docker build -t $DOCKER_USER/flask-app:latest .' 
+    }
+}
         stage('Push to Dockerhub') {
             steps {
                 withCredentials([usernamePassword(
@@ -30,7 +31,6 @@ pipeline {
                 )]) {
                     sh '''
                         docker login -u $DOCKER_USER -p $DOCKER_PASS
-                        docker image tag flask-app:latest $DOCKER_USER/flask-app:latest
                         docker push $DOCKER_USER/flask-app:latest
                     '''
                 }
