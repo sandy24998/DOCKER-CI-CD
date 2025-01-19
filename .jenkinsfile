@@ -18,9 +18,19 @@ pipeline {
 }
 
         stage('Docker Build') {
-    steps {
-        sh 'docker build -t $DOCKER_USER/flask-app:latest .' 
-    }
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'DockerHubCred', 
+                    usernameVariable: 'DOCKER_USER', 
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    // Use the credentials to login and build the image
+                    sh '''
+                        docker build -t $DOCKER_USER/flask-app:latest .
+                    '''
+                }
+            }
+        }
 }
         stage('Push to Dockerhub') {
             steps {
