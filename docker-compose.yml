@@ -4,3 +4,4 @@ services:
     image: "flask-app:latest"
     ports:
       - "5000:5000"
+      
